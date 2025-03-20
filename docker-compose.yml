@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  snowflakerepro:
+    container_name: "snowflakerepro"
+    image: localstack/snowflake:latest@sha256:14300871db6c2e8d3c0b5177602fda69b7c2943f6c2743cc316bc40ea6e720c9
+    networks:
+      local:
+        aliases:
+          - snowflake.localhost.localstack.cloud
+    ports:
+      - "127.0.0.1:4566:4566"
+      - "127.0.0.1:4510-4559:4510-4559"
+      - "127.0.0.1:443:443"
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:?}
+      - DOCKER_FLAGS='-e SF_LOG=trace'
+      - DEBUG=1
+      - IMAGE_NAME=localstack/snowflake
+    volumes:
+      - "./volume:/var/lib/localstack"
+networks:
+  local:
+    external: true
