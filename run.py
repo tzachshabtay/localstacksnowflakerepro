@@ -2,7 +2,7 @@ import snowflake.connector as sf
 
 with open('/tmp/myfile.csv', 'w') as f:
     f.write('ID,NAME\n')
-    f.write('1,0\n')
+    f.write('1,100\n')
 
 conn = sf.connect(
     user="test",
