@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  snowflakerepro:
-    container_name: "snowflakerepro"
-    image: localstack/snowflake:latest@sha256:14300871db6c2e8d3c0b5177602fda69b7c2943f6c2743cc316bc40ea6e720c9
+  snowflake_repro:
+    container_name: "snowflake_repro"
+    image: localstack/snowflake:latest@sha256:86e410496a1e0912fe5376520f95f970c792559c821c460d935e6e9eb547e37d
     networks:
       local:
         aliases:

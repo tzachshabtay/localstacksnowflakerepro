@@ -2,7 +2,7 @@ import snowflake.connector as sf
 
 with open('/tmp/myfile.csv', 'w') as f:
     f.write('ID,NAME\n')
-    f.write('1,20210101\n')
+    f.write('1,0\n')
 
 conn = sf.connect(
     user="test",
@@ -10,28 +10,34 @@ conn = sf.connect(
     account="test",
     database="test",
     host="snowflake.localhost.localstack.cloud",
-    schema="MYSCHEMA",
     auto_commit=False
 )
 
 cursor = conn.cursor()
 
-cursor.execute("PUT file:///tmp/myfile.csv @MYSCHEMA.MYSTAGE/path/to/stage")
+cursor.execute("PUT file:///tmp/myfile.csv @TEST.PUBLIC.MYSTAGE/path/to/stage")
 
 cursor.execute("""
-MERGE INTO MYSCHEMA.MYTABLE AS TARGET
+MERGE INTO TEST.PUBLIC.MYTABLE AS TARGET
 USING (
     SELECT
         $1 AS ID,
-        $2 AS NAME
-    FROM @MYSCHEMA.MYSTAGE/path/to/stage
-    (FILE_FORMAT => MYSCHEMA.MYFORMAT)
+        CAST($2 AS NUMBER(38,17)) AS NAME
+    FROM @TEST.PUBLIC.MYSTAGE/path/to/stage
+    (FILE_FORMAT => TEST.PUBLIC.MYFORMAT)
 ) AS NEW_ROWS
 ON TARGET.ID = NEW_ROWS.ID
 WHEN NOT MATCHED THEN
     INSERT (ID, NAME)
     VALUES (NEW_ROWS.ID, NEW_ROWS.NAME)
+WHEN MATCHED THEN
+    UPDATE SET TARGET.NAME = NEW_ROWS.NAME
 """)
+
+# query the table and print the results
+cursor.execute("SELECT * FROM TEST.PUBLIC.MYTABLE")
+for row in cursor.fetchall():
+    print(row)
 
 conn.rollback()
 conn.close()
