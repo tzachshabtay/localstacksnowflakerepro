@@ -14,10 +14,10 @@ conn = sf.connect(
 cursor = conn.cursor()
 
 cursor.execute("""
-SELECT
-    LOWER(REGEXP_REPLACE(COL1, 'PREFIX_', '')) AS COL1,
-FROM
-    MYSCHEMA.MYTABLE;
+with source1 as (select COL1 from MYSCHEMA.MYTABLE),
+source2 as (select COL1 from MYSCHEMA.MYTABLE2)
+select * from source1 full outer join source2 on source1.COL1 = source2.COL1
+               order by source1.COL1 limit 5;
 """)
 
 conn.rollback()
