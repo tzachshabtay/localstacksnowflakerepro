@@ -1,3 +1,3 @@
 # localstacksnowflakerepro
 
-Run setup.sh and then run.py
+Run setup.sh and then `go run .`

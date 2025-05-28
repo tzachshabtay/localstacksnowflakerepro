@@ -1,0 +1,1 @@
+PUT file://[LOCAL_PATH] @MYSCHEMA.MYSTAGE/test;
