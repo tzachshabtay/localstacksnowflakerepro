@@ -1,13 +1,13 @@
 package main
 
 import (
-	_ "embed"
 	"context"
-	"strings"
-	"fmt"
 	"database/sql"
-	"path/filepath"
+	_ "embed"
+	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/snowflakedb/gosnowflake"
 )
@@ -33,7 +33,8 @@ func main() {
 		Password: "test",
 		Database: "test",
 		Host:     "snowflake.localhost.localstack.cloud",
-		Schema:    "MYSCHEMA",
+		Port:     4567,
+		Schema:   "MYSCHEMA",
 	}
 	connector, err := gosnowflake.DSN(conf)
 	if err != nil {
