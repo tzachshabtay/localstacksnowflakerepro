@@ -34,7 +34,7 @@ services:
           - aws
   snowflakerepro:
     container_name: "snowflakerepro"
-    image: localstack/snowflake:latest@sha256:4a3d198ea0af0d8d8a06bd41d3a65d0e0050ccbd8e8f256ffcb237a5a2cafd63
+    image: localstack/snowflake:latest@sha256:45a6a372d8a8cd58186f05f1ea8acbf3973df104cb38c14063e3d66e8cc79509
     networks:
       local:
         aliases:
@@ -49,8 +49,8 @@ services:
       - DOCKER_FLAGS='-e SF_LOG=trace'
       - DEBUG=1
       - IMAGE_NAME=localstack/snowflake
-      - SF_S3_ENDPOINT=http://aws:4566
-      - SF_AWS_ENDPOINT_URL=http://aws:4566
+      - SF_S3_ENDPOINT=aws:4566
+      - SF_S3_ENDPOINT_EXTERNAL=s3.localhost.localstack.cloud:4566
     volumes:
       - "./volume:/var/lib/localstack"
 networks:
