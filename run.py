@@ -14,10 +14,40 @@ conn = sf.connect(
 cursor = conn.cursor()
 
 cursor.execute("""
-with source1 as (select COL1 from MYSCHEMA.MYTABLE),
-source2 as (select COL1 from MYSCHEMA.MYTABLE2)
-select * from source1 full outer join source2 on source1.COL1 = source2.COL1
-               order by source1.COL1 limit 5;
+with source1 as (
+    select
+        COL1,
+        COL2,
+        COL3
+    from
+        MYSCHEMA.MYTABLE
+    where
+        COL2 = '2023-01-01'
+    ),
+source2 as (
+    select
+        record_content:col1 AS COL1,
+        record_content:col2 AS COL2,
+        record_content:col3 AS COL3
+    from
+        MYSCHEMA.MYTABLE2
+    where
+        CAST(record_content:col2 AS DECIMAL(38, 0)) = 20230101
+)
+select
+    COALESCE(s.COL1, d.COL1) as id,
+    s.COL3 AS source_col,
+    d.COL3 as dest_col
+from
+    source1 as s
+full outer join
+    source2 as d
+on
+    s.COL1 = d.COL1
+where
+    s.COL1 IS DISTINCT FROM d.COL1 OR
+    s.COL3 IS DISTINCT FROM d.COL3
+               limit 100;
 """)
 
 conn.rollback()
