@@ -1,13 +1,13 @@
 package main
 
 import (
-	_ "embed"
 	"context"
-	"strings"
-	"fmt"
 	"database/sql"
-	"path/filepath"
+	_ "embed"
+	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/snowflakedb/gosnowflake"
 )
@@ -21,8 +21,11 @@ var query string
 //go:embed put.sql
 var put string
 
-//go:embed merge.sql
-var merge string
+//go:embed create_temp.sql
+var create string
+
+//go:embed copy.sql
+var copy string
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -33,7 +36,8 @@ func main() {
 		Password: "test",
 		Database: "test",
 		Host:     "snowflake.localhost.localstack.cloud",
-		Schema:    "MYSCHEMA",
+		Port:     4567,
+		Schema:   "MYSCHEMA",
 	}
 	connector, err := gosnowflake.DSN(conf)
 	if err != nil {
@@ -77,13 +81,20 @@ func main() {
 		return
 	}
 	fmt.Println("Put statement executed successfully!")
-	_, err = tx.ExecContext(ctx, merge)
+	_, err = tx.ExecContext(ctx, create)
 	if err != nil {
-		fmt.Printf("Failed to execute merge statement: %v\n", err)
+		fmt.Printf("Failed to execute create statement: %v\n", err)
 		tx.Rollback()
 		return
 	}
-	fmt.Println("Merge statement executed successfully!")
+	fmt.Println("Create statement executed successfully!")
+	_, err = tx.ExecContext(ctx, copy)
+	if err != nil {
+		fmt.Printf("Failed to execute copy statement: %v\n", err)
+		tx.Rollback()
+		return
+	}
+	fmt.Println("Copy statement executed successfully!")
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err)
