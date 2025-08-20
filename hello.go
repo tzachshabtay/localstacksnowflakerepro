@@ -21,11 +21,8 @@ var query string
 //go:embed put.sql
 var put string
 
-//go:embed create_temp.sql
-var create string
-
-//go:embed copy.sql
-var copy string
+//go:embed merge.sql
+var merge string
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -81,20 +78,14 @@ func main() {
 		return
 	}
 	fmt.Println("Put statement executed successfully!")
-	_, err = tx.ExecContext(ctx, create)
+	_, err = tx.ExecContext(ctx, merge)
 	if err != nil {
-		fmt.Printf("Failed to execute create statement: %v\n", err)
+		fmt.Printf("Failed to execute merge statement: %v\n", err)
 		tx.Rollback()
 		return
 	}
-	fmt.Println("Create statement executed successfully!")
-	_, err = tx.ExecContext(ctx, copy)
-	if err != nil {
-		fmt.Printf("Failed to execute copy statement: %v\n", err)
-		tx.Rollback()
-		return
-	}
-	fmt.Println("Copy statement executed successfully!")
+	fmt.Println("Merge statement executed successfully!")
+
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		fmt.Printf("Failed to execute query: %v\n", err)
