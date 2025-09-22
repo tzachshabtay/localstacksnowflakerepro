@@ -13,6 +13,9 @@ conn = sf.connect(
 
 cursor = conn.cursor()
 
+# Start transaction
+cursor.execute("BEGIN TRANSACTION;")
+
 cursor.execute("""
 with source1 as (
     select
@@ -47,10 +50,19 @@ on
 where
     s.COL1 IS DISTINCT FROM d.COL1 OR
     s.COL3 IS DISTINCT FROM d.COL3
-               limit 100;
+                limit 100;
 """)
 
-conn.rollback()
+# Fetch and process results if needed
+results = cursor.fetchall()
+
+cursor.execute("CREATE TABLE IF NOT EXISTS MYSCHEMA.MYTABLE2 (record_metadata VARIANT, record_content VARIANT);")
+
+# Commit the transaction if everything succeeds
+cursor.execute("COMMIT;")
+print(f"Transaction completed successfully. Retrieved {len(results)} rows.")
+
+cursor.close()
 conn.close()
 
 print("Done")
