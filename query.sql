@@ -38,7 +38,8 @@
     FULL OUTER JOIN
         eod_my_cte e
     ON
-        l.col2 = e.col2
+        l.col2 = e.col2 AND
+        EQUAL_NULL(l.col1, e.col1)
     WHERE
         total_diffs > 0
     ORDER BY
